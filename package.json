@@ -17,6 +17,7 @@
     "https": "^1.0.0",
     "lichess-api": "^1.0.2",
     "node-fetch": "^3.3.0",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "querystring": "^0.2.1"
   }
 }
