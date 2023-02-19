@@ -63,6 +63,6 @@ app.post("/makeMove/:gameId/:move", (req, res) => {
     }
 })
 
-app.listen(5000, async ()=> {
+app.listen(80, async ()=> {
     console.log('app is running')
 })
