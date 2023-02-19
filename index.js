@@ -21,7 +21,19 @@ const readStream = processLine => response => {
             buf += chunk; // this chunk object is a string of our JSON object event
             const parts = buf.split(matcher);
             buf = parts.pop();
-            for (const i of parts.filter(p => p)) processLine(JSON.parse(i));
+            for (const i of parts.filter(p => p)) {
+                //processLine(JSON.parse(i));
+                let jsonTemp = JSON.parse(i);
+                if (jsonTemp != null && jsonTemp.type == "gameStart") {
+                    console.log("Game has started with id: " + jsonTemp.game.gameId);
+                    const gameStream = fetch(`https://lichess.org/api/board/game/stream/${jsonTemp.game.gameId}`, {headers:headers})
+                    gameStream
+                        .then(readStream(onMessage));
+                }
+                if (jsonTemp != null && jsonTemp.type == "gameState") {
+                    console.log("Last move made: " + jsonTemp.moves.split(" ").slice(-1))
+                }
+            }
         });
         response.body.on('end', () => {
             if (buf.length > 0) processLine(JSON.parse(buf));
@@ -36,6 +48,7 @@ const headers = {
     Authorization: 'Bearer ' + 'lip_Zt6rLGHWhZj8qcaeTaLG'
 };
 
+
 app.post("/seekGame", (req, res) => {
     // Initially open a listening port
     console.log("hit the endpoint")
@@ -48,7 +61,7 @@ app.post("/seekGame", (req, res) => {
     stream
         .then(readStream(onMessage));
     console.log('outside');
-    fetch('https://lichess.org/api/board/seek', {method: 'POST', headers: headers});
+    //fetch('https://lichess.org/api/board/seek', {method: 'POST', headers: headers});
 } )
 
 app.post("/makeMove/:gameId/:move", (req, res) => {
@@ -63,6 +76,6 @@ app.post("/makeMove/:gameId/:move", (req, res) => {
     }
 })
 
-app.listen(80, async ()=> {
+app.listen(5000, async ()=> {
     console.log('app is running')
 })
